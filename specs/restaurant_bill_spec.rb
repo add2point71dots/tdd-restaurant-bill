@@ -27,8 +27,8 @@ describe "RestaurantBill" do
     @bill.order_item("tea", 2.0)
 
     @bill.ordered_items.must_include ["apple", 1.0]
-    @bill.ordered_items.must_include ["apple", 1.0]
-    @bill.ordered_items.must_include ["apple", 1.0]
+    @bill.ordered_items.must_include ["soup", 7.5]
+    @bill.ordered_items.must_include ["tea", 2.0]
   end
 
   it "add_tax returns total plus tax" do
@@ -37,5 +37,26 @@ describe "RestaurantBill" do
     @bill.order_item("tea", 2.0)
 
     @bill.add_tax.must_equal (10.5 * 1.096)
+  end
+
+  it "add_tip returns total plus tip" do
+    @bill.order_item("apple", 1.0)
+    @bill.order_item("soup", 7.5)
+    @bill.order_item("tea", 2.0)
+
+    @bill.add_tip(15).must_equal (10.5 * 1.15)
+  end
+
+  it "doesn't allow negative tips" do
+    proc { @bill.add_tip(-4) }.must_raise ArgumentError
+  end
+
+  it "final_cost returns total plus tax and tip" do
+    @bill.order_item("apple", 1.0)
+    @bill.order_item("soup", 7.5)
+    @bill.order_item("tea", 2.0)
+    @bill.add_tip(18)
+
+    @bill.final_cost.must_equal (10.5 * 1.096) + (10.5 * 0.18)
   end
 end
